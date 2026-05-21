@@ -1,0 +1,40 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Local environments
+.venv/
+venv/
+env/
+.env
+
+# Data and generated datasets
+data/
+*.tar
+*.tar.gz
+*.zip
+*.aria2
+
+# Runtime uploads and logs
+backend/uploads/
+*.log
+
+# Local render/build artifacts
+report/rendered_report/
+
+# Download helper scripts and early process notes
+download_food101_aria2.ps1
+training/download_food101_torchvision.py
+docs/01-需求文档.md
+docs/02-技术栈说明.md
+docs/03-开发流程.md
+docs/04-前端页面仿真图.md
+docs/05-数据集与模型方案.md
+docs/06-手机端扩展方案.md
+docs/07-环境搭建与参考仓库说明.md
+docs/08-数据集下载与整理教程.md
+docs/09-Food-101快速下载方案.md
+docs/10-先跑通工程流程说明.md
+
+# Office temporary files
+~$*.docx

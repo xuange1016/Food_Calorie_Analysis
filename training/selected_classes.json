@@ -1,0 +1,44 @@
+{
+  "classes": [
+    {
+      "food101_name": "fried_rice",
+      "display_name": "炒饭"
+    },
+    {
+      "food101_name": "ramen",
+      "display_name": "拉面"
+    },
+    {
+      "food101_name": "hamburger",
+      "display_name": "汉堡"
+    },
+    {
+      "food101_name": "pizza",
+      "display_name": "披萨"
+    },
+    {
+      "food101_name": "chicken_wings",
+      "display_name": "鸡翅/炸鸡类"
+    },
+    {
+      "food101_name": "caesar_salad",
+      "display_name": "凯撒沙拉"
+    },
+    {
+      "food101_name": "sushi",
+      "display_name": "寿司"
+    },
+    {
+      "food101_name": "filet_mignon",
+      "display_name": "牛排"
+    },
+    {
+      "food101_name": "chocolate_cake",
+      "display_name": "巧克力蛋糕"
+    },
+    {
+      "food101_name": "dumplings",
+      "display_name": "饺子"
+    }
+  ]
+}

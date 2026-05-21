@@ -1,0 +1,92 @@
+{
+  "fried_rice": {
+    "display_name": "炒饭",
+    "calories": 188,
+    "protein": 5.0,
+    "fat": 6.0,
+    "carbohydrate": 28.0,
+    "unit": "每100克估算值",
+    "suggestion": "炒饭碳水和油脂都不低，建议搭配蔬菜并控制主食量。"
+  },
+  "ramen": {
+    "display_name": "拉面",
+    "calories": 170,
+    "protein": 7.0,
+    "fat": 5.0,
+    "carbohydrate": 24.0,
+    "unit": "每100克估算值",
+    "suggestion": "拉面碳水较高，适合作为主食，建议少喝高盐汤底。"
+  },
+  "hamburger": {
+    "display_name": "汉堡",
+    "calories": 295,
+    "protein": 13.0,
+    "fat": 12.0,
+    "carbohydrate": 30.0,
+    "unit": "每100克估算值",
+    "suggestion": "汉堡热量和脂肪偏高，建议减少薯条、含糖饮料等搭配。"
+  },
+  "pizza": {
+    "display_name": "披萨",
+    "calories": 266,
+    "protein": 11.0,
+    "fat": 10.0,
+    "carbohydrate": 33.0,
+    "unit": "每100克估算值",
+    "suggestion": "披萨热量较高，建议搭配沙拉并控制摄入量。"
+  },
+  "chicken_wings": {
+    "display_name": "鸡翅/炸鸡类",
+    "calories": 254,
+    "protein": 18.0,
+    "fat": 17.0,
+    "carbohydrate": 7.0,
+    "unit": "每100克估算值",
+    "suggestion": "鸡翅蛋白质较高，但脂肪也偏高，建议少吃油炸做法。"
+  },
+  "caesar_salad": {
+    "display_name": "凯撒沙拉",
+    "calories": 150,
+    "protein": 6.0,
+    "fat": 10.0,
+    "carbohydrate": 8.0,
+    "unit": "每100克估算值",
+    "suggestion": "沙拉整体较清淡，但酱料可能增加脂肪，建议适量添加。"
+  },
+  "sushi": {
+    "display_name": "寿司",
+    "calories": 145,
+    "protein": 5.5,
+    "fat": 2.0,
+    "carbohydrate": 28.0,
+    "unit": "每100克估算值",
+    "suggestion": "寿司碳水较高、脂肪较低，适合轻量正餐，注意搭配蛋白质。"
+  },
+  "filet_mignon": {
+    "display_name": "牛排",
+    "calories": 267,
+    "protein": 26.0,
+    "fat": 17.0,
+    "carbohydrate": 0.0,
+    "unit": "每100克估算值",
+    "suggestion": "牛排蛋白质较高，适合补充蛋白质，建议搭配蔬菜和适量主食。"
+  },
+  "chocolate_cake": {
+    "display_name": "巧克力蛋糕",
+    "calories": 371,
+    "protein": 5.0,
+    "fat": 16.0,
+    "carbohydrate": 53.0,
+    "unit": "每100克估算值",
+    "suggestion": "蛋糕热量和糖分较高，建议作为甜点少量食用。"
+  },
+  "dumplings": {
+    "display_name": "饺子",
+    "calories": 230,
+    "protein": 8.0,
+    "fat": 8.0,
+    "carbohydrate": 30.0,
+    "unit": "每100克估算值",
+    "suggestion": "饺子碳水和蛋白质都有，建议搭配蔬菜，避免蘸料过咸。"
+  }
+}

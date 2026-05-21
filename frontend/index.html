@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>菜品识别与热量估算助手</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <p class="eyebrow">AI 课程设计 Demo</p>
+        <h1>食堂/外卖菜品识别与热量估算助手</h1>
+        <p>上传或拍摄一张食物图片，系统会识别类别并给出平均营养估算。</p>
+      </header>
+
+      <section class="workspace">
+        <section class="upload-panel" aria-label="图片上传区域">
+          <div class="preview-box">
+            <img id="previewImage" alt="图片预览" hidden />
+            <div id="emptyPreview" class="empty-preview">请选择一张食物图片</div>
+          </div>
+
+          <div class="actions">
+            <label class="file-button" for="imageInput">拍照/选择图片</label>
+            <input id="imageInput" type="file" accept="image/*" capture="environment" />
+            <button id="predictButton" type="button">开始识别</button>
+          </div>
+          <p id="statusText" class="status-text">支持 jpg、jpeg、png。手机浏览器可尝试调用相机。</p>
+        </section>
+
+        <section class="result-panel" aria-label="识别结果区域">
+          <article class="info-block">
+            <h2>识别结果</h2>
+            <dl>
+              <div>
+                <dt>食物类别</dt>
+                <dd id="foodName">暂未识别</dd>
+              </div>
+              <div>
+                <dt>置信度</dt>
+                <dd id="confidence">--</dd>
+              </div>
+            </dl>
+          </article>
+
+          <article class="info-block">
+            <h2>营养信息</h2>
+            <p id="unitText" class="unit-text">每100克估算值</p>
+            <div class="nutrition-grid">
+              <div><span id="calories">--</span><small>kcal 热量</small></div>
+              <div><span id="protein">--</span><small>g 蛋白质</small></div>
+              <div><span id="fat">--</span><small>g 脂肪</small></div>
+              <div><span id="carbohydrate">--</span><small>g 碳水</small></div>
+            </div>
+          </article>
+
+          <article class="info-block">
+            <h2>饮食建议</h2>
+            <p id="suggestion">上传图片后生成建议。</p>
+          </article>
+
+          <article class="info-block">
+            <h2>Top-3 预测</h2>
+            <ol id="topPredictions" class="top-list">
+              <li>暂无结果</li>
+            </ol>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
