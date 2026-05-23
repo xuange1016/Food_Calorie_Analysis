@@ -3,6 +3,7 @@ const previewImage = document.querySelector("#previewImage");
 const emptyPreview = document.querySelector("#emptyPreview");
 const predictButton = document.querySelector("#predictButton");
 const statusText = document.querySelector("#statusText");
+const modelInfoText = document.querySelector("#modelInfoText");
 
 const foodName = document.querySelector("#foodName");
 const confidence = document.querySelector("#confidence");
@@ -15,6 +16,8 @@ const suggestion = document.querySelector("#suggestion");
 const topPredictions = document.querySelector("#topPredictions");
 
 let selectedFile = null;
+
+loadModelInfo();
 
 imageInput.addEventListener("change", () => {
   const file = imageInput.files[0];
@@ -66,20 +69,39 @@ predictButton.addEventListener("click", async () => {
 });
 
 function renderResult(data) {
-  foodName.textContent = `${data.display_name} (${data.food_name})`;
+  foodName.textContent = data.display_name;
   confidence.textContent = `${(data.confidence * 100).toFixed(1)}%`;
 
   calories.textContent = data.nutrition.calories;
   protein.textContent = data.nutrition.protein;
   fat.textContent = data.nutrition.fat;
   carbohydrate.textContent = data.nutrition.carbohydrate;
-  unitText.textContent = data.nutrition.unit;
+  unitText.textContent = `${data.nutrition.category || "未分类"} | ${data.nutrition.unit}`;
   suggestion.textContent = data.suggestion;
 
   topPredictions.innerHTML = "";
   data.top_predictions.forEach((item) => {
     const li = document.createElement("li");
-    li.textContent = `${item.food_name}: ${(item.confidence * 100).toFixed(1)}%`;
+    li.textContent = `${item.display_name || item.food_name}: ${(item.confidence * 100).toFixed(1)}%`;
     topPredictions.appendChild(li);
   });
+}
+
+async function loadModelInfo() {
+  if (!modelInfoText) {
+    return;
+  }
+
+  try {
+    const response = await fetch("/model-info");
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "模型信息读取失败");
+    }
+
+    modelInfoText.textContent = `当前模型：${data.num_classes} 类，输入尺寸 ${data.image_size}，运行设备 ${data.device}。`;
+  } catch (error) {
+    modelInfoText.textContent = "当前模型信息暂不可用，请确认后端服务和模型文件已准备好。";
+  }
 }

@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+import time
 from pathlib import Path
 
 import torch
@@ -23,11 +24,18 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATA_DIR = PROJECT_ROOT / "data"
 DEFAULT_MODEL_PATH = PROJECT_ROOT / "backend" / "models" / "food_model.pth"
 DEFAULT_CLASS_NAMES_PATH = PROJECT_ROOT / "backend" / "models" / "class_names.json"
+DEFAULT_CHECKPOINT_DIR = PROJECT_ROOT / "backend" / "models" / "checkpoints"
 
 
 def load_class_names(path: Path) -> list[str]:
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def save_json(data: object, path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
 
 def build_transforms(image_size: int) -> dict[str, transforms.Compose]:
@@ -71,6 +79,8 @@ def run_one_epoch(
     optimizer: optim.Optimizer | None,
     device: torch.device,
     phase: str,
+    scaler: torch.amp.GradScaler | None = None,
+    use_amp: bool = False,
 ) -> tuple[float, float]:
     is_train = optimizer is not None
     model.train() if is_train else model.eval()
@@ -84,14 +94,20 @@ def run_one_epoch(
         labels = labels.to(device)
 
         with torch.set_grad_enabled(is_train):
-            outputs = model(inputs)
-            loss = criterion(outputs, labels)
+            with torch.amp.autocast(device_type=device.type, enabled=use_amp):
+                outputs = model(inputs)
+                loss = criterion(outputs, labels)
             _, preds = torch.max(outputs, 1)
 
             if is_train:
                 optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
+                if scaler is not None and use_amp:
+                    scaler.scale(loss).backward()
+                    scaler.step(optimizer)
+                    scaler.update()
+                else:
+                    loss.backward()
+                    optimizer.step()
 
         batch_size = inputs.size(0)
         running_loss += loss.item() * batch_size
@@ -101,6 +117,37 @@ def run_one_epoch(
     epoch_loss = running_loss / total
     epoch_acc = running_corrects / total
     return epoch_loss, epoch_acc
+
+
+def build_checkpoint(
+    epoch: int,
+    model: nn.Module,
+    optimizer: optim.Optimizer,
+    class_names: list[str],
+    image_size: int,
+    best_acc: float,
+    best_epoch: int,
+    history: list[dict],
+) -> dict:
+    return {
+        "epoch": epoch,
+        "model_state_dict": model.state_dict(),
+        "optimizer_state_dict": optimizer.state_dict(),
+        "class_names": class_names,
+        "image_size": image_size,
+        "model_name": "resnet18",
+        "best_acc": best_acc,
+        "best_epoch": best_epoch,
+        "history": history,
+    }
+
+
+def save_checkpoint(checkpoint: dict, checkpoint_dir: Path, epoch: int, is_best: bool) -> None:
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    torch.save(checkpoint, checkpoint_dir / f"checkpoint_epoch_{epoch:03d}.pth")
+    torch.save(checkpoint, checkpoint_dir / "checkpoint_latest.pth")
+    if is_best:
+        torch.save(checkpoint, checkpoint_dir / "checkpoint_best.pth")
 
 
 def main() -> None:
@@ -114,6 +161,11 @@ def main() -> None:
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--num-workers", type=int, default=0)
     parser.add_argument("--no-pretrained", action="store_true")
+    parser.add_argument("--checkpoint-dir", type=Path, default=DEFAULT_CHECKPOINT_DIR)
+    parser.add_argument("--resume", type=Path, default=None, help="从指定 checkpoint 继续训练。")
+    parser.add_argument("--auto-resume", action="store_true", help="如果存在 checkpoint_latest.pth，则自动续训。")
+    parser.add_argument("--history-path", type=Path, default=None)
+    parser.add_argument("--amp", action="store_true", help="在 CUDA 上使用自动混合精度训练。")
     args = parser.parse_args()
 
     train_dir = args.data_dir / "train"
@@ -163,27 +215,90 @@ def main() -> None:
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    use_amp = args.amp and device.type == "cuda"
+    scaler = torch.amp.GradScaler(device=device.type, enabled=use_amp) if use_amp else None
 
     best_acc = 0.0
+    best_epoch = 0
     best_state = copy.deepcopy(model.state_dict())
+    history: list[dict] = []
+    start_epoch = 1
 
-    for epoch in range(1, args.epochs + 1):
+    resume_path = args.resume
+    latest_checkpoint = args.checkpoint_dir / "checkpoint_latest.pth"
+    if resume_path is None and args.auto_resume and latest_checkpoint.exists():
+        resume_path = latest_checkpoint
+
+    if resume_path is not None:
+        checkpoint = torch.load(resume_path, map_location=device)
+        model.load_state_dict(checkpoint["model_state_dict"])
+        if "optimizer_state_dict" in checkpoint:
+            optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+        best_acc = float(checkpoint.get("best_acc", 0.0))
+        best_epoch = int(checkpoint.get("best_epoch", 0))
+        history = list(checkpoint.get("history", []))
+        start_epoch = int(checkpoint.get("epoch", 0)) + 1
+        best_checkpoint = args.checkpoint_dir / "checkpoint_best.pth"
+        if best_checkpoint.exists():
+            best_state = torch.load(best_checkpoint, map_location=device)["model_state_dict"]
+        else:
+            best_state = copy.deepcopy(model.state_dict())
+        print(f"从 checkpoint 继续训练: {resume_path}")
+        print(f"继续起点: epoch {start_epoch}, 当前最佳验证准确率: {best_acc:.4f}")
+
+    if start_epoch > args.epochs:
+        print(f"checkpoint 已完成到 epoch {start_epoch - 1}，目标 epochs={args.epochs}，无需继续训练。")
+
+    for epoch in range(start_epoch, args.epochs + 1):
+        epoch_start = time.time()
         print(f"\nEpoch {epoch}/{args.epochs}")
         train_loss, train_acc = run_one_epoch(
-            model, loaders["train"], criterion, optimizer, device, "train"
+            model, loaders["train"], criterion, optimizer, device, "train", scaler, use_amp
         )
         val_loss, val_acc = run_one_epoch(
-            model, loaders["val"], criterion, None, device, "val"
+            model, loaders["val"], criterion, None, device, "val", None, use_amp
         )
+        epoch_seconds = round(time.time() - epoch_start, 2)
 
         print(
             f"train_loss={train_loss:.4f}, train_acc={train_acc:.4f}, "
-            f"val_loss={val_loss:.4f}, val_acc={val_acc:.4f}"
+            f"val_loss={val_loss:.4f}, val_acc={val_acc:.4f}, "
+            f"epoch_seconds={epoch_seconds}"
         )
 
+        is_best = False
         if val_acc > best_acc:
             best_acc = val_acc
+            best_epoch = epoch
             best_state = copy.deepcopy(model.state_dict())
+            is_best = True
+
+        history.append(
+            {
+                "epoch": epoch,
+                "train_loss": round(train_loss, 6),
+                "train_acc": round(train_acc, 6),
+                "val_loss": round(val_loss, 6),
+                "val_acc": round(val_acc, 6),
+                "epoch_seconds": epoch_seconds,
+                "is_best": is_best,
+            }
+        )
+
+        checkpoint = build_checkpoint(
+            epoch=epoch,
+            model=model,
+            optimizer=optimizer,
+            class_names=class_names,
+            image_size=args.image_size,
+            best_acc=best_acc,
+            best_epoch=best_epoch,
+            history=history,
+        )
+        save_checkpoint(checkpoint, args.checkpoint_dir, epoch, is_best)
+        history_path = args.history_path or args.checkpoint_dir / "training_history.json"
+        save_json(history, history_path)
+        print(f"checkpoint 已保存: {args.checkpoint_dir / 'checkpoint_latest.pth'}")
 
     model.load_state_dict(best_state)
     args.model_path.parent.mkdir(parents=True, exist_ok=True)
@@ -193,11 +308,15 @@ def main() -> None:
             "class_names": class_names,
             "image_size": args.image_size,
             "model_name": "resnet18",
+            "best_acc": best_acc,
+            "best_epoch": best_epoch,
+            "history": history,
         },
         args.model_path,
     )
 
     print(f"\n训练完成，最佳验证准确率: {best_acc:.4f}")
+    print(f"最佳 epoch: {best_epoch}")
     print(f"模型已保存: {args.model_path}")
 
 

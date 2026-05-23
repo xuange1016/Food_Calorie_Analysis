@@ -1,0 +1,408 @@
+{
+  "classes": [
+    {
+      "food101_name": "apple_pie",
+      "display_name": "Apple pie"
+    },
+    {
+      "food101_name": "baby_back_ribs",
+      "display_name": "Baby back ribs"
+    },
+    {
+      "food101_name": "baklava",
+      "display_name": "Baklava"
+    },
+    {
+      "food101_name": "beef_carpaccio",
+      "display_name": "Beef carpaccio"
+    },
+    {
+      "food101_name": "beef_tartare",
+      "display_name": "Beef tartare"
+    },
+    {
+      "food101_name": "beet_salad",
+      "display_name": "Beet salad"
+    },
+    {
+      "food101_name": "beignets",
+      "display_name": "Beignets"
+    },
+    {
+      "food101_name": "bibimbap",
+      "display_name": "Bibimbap"
+    },
+    {
+      "food101_name": "bread_pudding",
+      "display_name": "Bread pudding"
+    },
+    {
+      "food101_name": "breakfast_burrito",
+      "display_name": "Breakfast burrito"
+    },
+    {
+      "food101_name": "bruschetta",
+      "display_name": "Bruschetta"
+    },
+    {
+      "food101_name": "caesar_salad",
+      "display_name": "Caesar salad"
+    },
+    {
+      "food101_name": "cannoli",
+      "display_name": "Cannoli"
+    },
+    {
+      "food101_name": "caprese_salad",
+      "display_name": "Caprese salad"
+    },
+    {
+      "food101_name": "carrot_cake",
+      "display_name": "Carrot cake"
+    },
+    {
+      "food101_name": "ceviche",
+      "display_name": "Ceviche"
+    },
+    {
+      "food101_name": "cheesecake",
+      "display_name": "Cheesecake"
+    },
+    {
+      "food101_name": "cheese_plate",
+      "display_name": "Cheese plate"
+    },
+    {
+      "food101_name": "chicken_curry",
+      "display_name": "Chicken curry"
+    },
+    {
+      "food101_name": "chicken_quesadilla",
+      "display_name": "Chicken quesadilla"
+    },
+    {
+      "food101_name": "chicken_wings",
+      "display_name": "Chicken wings"
+    },
+    {
+      "food101_name": "chocolate_cake",
+      "display_name": "Chocolate cake"
+    },
+    {
+      "food101_name": "chocolate_mousse",
+      "display_name": "Chocolate mousse"
+    },
+    {
+      "food101_name": "churros",
+      "display_name": "Churros"
+    },
+    {
+      "food101_name": "clam_chowder",
+      "display_name": "Clam chowder"
+    },
+    {
+      "food101_name": "club_sandwich",
+      "display_name": "Club sandwich"
+    },
+    {
+      "food101_name": "crab_cakes",
+      "display_name": "Crab cakes"
+    },
+    {
+      "food101_name": "creme_brulee",
+      "display_name": "Creme brulee"
+    },
+    {
+      "food101_name": "croque_madame",
+      "display_name": "Croque madame"
+    },
+    {
+      "food101_name": "cup_cakes",
+      "display_name": "Cup cakes"
+    },
+    {
+      "food101_name": "deviled_eggs",
+      "display_name": "Deviled eggs"
+    },
+    {
+      "food101_name": "donuts",
+      "display_name": "Donuts"
+    },
+    {
+      "food101_name": "dumplings",
+      "display_name": "Dumplings"
+    },
+    {
+      "food101_name": "edamame",
+      "display_name": "Edamame"
+    },
+    {
+      "food101_name": "eggs_benedict",
+      "display_name": "Eggs benedict"
+    },
+    {
+      "food101_name": "escargots",
+      "display_name": "Escargots"
+    },
+    {
+      "food101_name": "falafel",
+      "display_name": "Falafel"
+    },
+    {
+      "food101_name": "filet_mignon",
+      "display_name": "Filet mignon"
+    },
+    {
+      "food101_name": "fish_and_chips",
+      "display_name": "Fish and chips"
+    },
+    {
+      "food101_name": "foie_gras",
+      "display_name": "Foie gras"
+    },
+    {
+      "food101_name": "french_fries",
+      "display_name": "French fries"
+    },
+    {
+      "food101_name": "french_onion_soup",
+      "display_name": "French onion soup"
+    },
+    {
+      "food101_name": "french_toast",
+      "display_name": "French toast"
+    },
+    {
+      "food101_name": "fried_calamari",
+      "display_name": "Fried calamari"
+    },
+    {
+      "food101_name": "fried_rice",
+      "display_name": "Fried rice"
+    },
+    {
+      "food101_name": "frozen_yogurt",
+      "display_name": "Frozen yogurt"
+    },
+    {
+      "food101_name": "garlic_bread",
+      "display_name": "Garlic bread"
+    },
+    {
+      "food101_name": "gnocchi",
+      "display_name": "Gnocchi"
+    },
+    {
+      "food101_name": "greek_salad",
+      "display_name": "Greek salad"
+    },
+    {
+      "food101_name": "grilled_cheese_sandwich",
+      "display_name": "Grilled cheese sandwich"
+    },
+    {
+      "food101_name": "grilled_salmon",
+      "display_name": "Grilled salmon"
+    },
+    {
+      "food101_name": "guacamole",
+      "display_name": "Guacamole"
+    },
+    {
+      "food101_name": "gyoza",
+      "display_name": "Gyoza"
+    },
+    {
+      "food101_name": "hamburger",
+      "display_name": "Hamburger"
+    },
+    {
+      "food101_name": "hot_and_sour_soup",
+      "display_name": "Hot and sour soup"
+    },
+    {
+      "food101_name": "hot_dog",
+      "display_name": "Hot dog"
+    },
+    {
+      "food101_name": "huevos_rancheros",
+      "display_name": "Huevos rancheros"
+    },
+    {
+      "food101_name": "hummus",
+      "display_name": "Hummus"
+    },
+    {
+      "food101_name": "ice_cream",
+      "display_name": "Ice cream"
+    },
+    {
+      "food101_name": "lasagna",
+      "display_name": "Lasagna"
+    },
+    {
+      "food101_name": "lobster_bisque",
+      "display_name": "Lobster bisque"
+    },
+    {
+      "food101_name": "lobster_roll_sandwich",
+      "display_name": "Lobster roll sandwich"
+    },
+    {
+      "food101_name": "macaroni_and_cheese",
+      "display_name": "Macaroni and cheese"
+    },
+    {
+      "food101_name": "macarons",
+      "display_name": "Macarons"
+    },
+    {
+      "food101_name": "miso_soup",
+      "display_name": "Miso soup"
+    },
+    {
+      "food101_name": "mussels",
+      "display_name": "Mussels"
+    },
+    {
+      "food101_name": "nachos",
+      "display_name": "Nachos"
+    },
+    {
+      "food101_name": "omelette",
+      "display_name": "Omelette"
+    },
+    {
+      "food101_name": "onion_rings",
+      "display_name": "Onion rings"
+    },
+    {
+      "food101_name": "oysters",
+      "display_name": "Oysters"
+    },
+    {
+      "food101_name": "pad_thai",
+      "display_name": "Pad thai"
+    },
+    {
+      "food101_name": "paella",
+      "display_name": "Paella"
+    },
+    {
+      "food101_name": "pancakes",
+      "display_name": "Pancakes"
+    },
+    {
+      "food101_name": "panna_cotta",
+      "display_name": "Panna cotta"
+    },
+    {
+      "food101_name": "peking_duck",
+      "display_name": "Peking duck"
+    },
+    {
+      "food101_name": "pho",
+      "display_name": "Pho"
+    },
+    {
+      "food101_name": "pizza",
+      "display_name": "Pizza"
+    },
+    {
+      "food101_name": "pork_chop",
+      "display_name": "Pork chop"
+    },
+    {
+      "food101_name": "poutine",
+      "display_name": "Poutine"
+    },
+    {
+      "food101_name": "prime_rib",
+      "display_name": "Prime rib"
+    },
+    {
+      "food101_name": "pulled_pork_sandwich",
+      "display_name": "Pulled pork sandwich"
+    },
+    {
+      "food101_name": "ramen",
+      "display_name": "Ramen"
+    },
+    {
+      "food101_name": "ravioli",
+      "display_name": "Ravioli"
+    },
+    {
+      "food101_name": "red_velvet_cake",
+      "display_name": "Red velvet cake"
+    },
+    {
+      "food101_name": "risotto",
+      "display_name": "Risotto"
+    },
+    {
+      "food101_name": "samosa",
+      "display_name": "Samosa"
+    },
+    {
+      "food101_name": "sashimi",
+      "display_name": "Sashimi"
+    },
+    {
+      "food101_name": "scallops",
+      "display_name": "Scallops"
+    },
+    {
+      "food101_name": "seaweed_salad",
+      "display_name": "Seaweed salad"
+    },
+    {
+      "food101_name": "shrimp_and_grits",
+      "display_name": "Shrimp and grits"
+    },
+    {
+      "food101_name": "spaghetti_bolognese",
+      "display_name": "Spaghetti bolognese"
+    },
+    {
+      "food101_name": "spaghetti_carbonara",
+      "display_name": "Spaghetti carbonara"
+    },
+    {
+      "food101_name": "spring_rolls",
+      "display_name": "Spring rolls"
+    },
+    {
+      "food101_name": "steak",
+      "display_name": "Steak"
+    },
+    {
+      "food101_name": "strawberry_shortcake",
+      "display_name": "Strawberry shortcake"
+    },
+    {
+      "food101_name": "sushi",
+      "display_name": "Sushi"
+    },
+    {
+      "food101_name": "tacos",
+      "display_name": "Tacos"
+    },
+    {
+      "food101_name": "takoyaki",
+      "display_name": "Takoyaki"
+    },
+    {
+      "food101_name": "tiramisu",
+      "display_name": "Tiramisu"
+    },
+    {
+      "food101_name": "tuna_tartare",
+      "display_name": "Tuna tartare"
+    },
+    {
+      "food101_name": "waffles",
+      "display_name": "Waffles"
+    }
+  ]
+}

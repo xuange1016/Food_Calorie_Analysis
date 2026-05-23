@@ -11,11 +11,19 @@ from pathlib import Path
 
 
 DEFAULT_NUTRITION_PATH = Path(__file__).resolve().parent / "food_nutrition.json"
+DEFAULT_DISPLAY_NAMES_PATH = Path(__file__).resolve().parent / "food_display_names.json"
 
 
 def load_nutrition_table(path: Path = DEFAULT_NUTRITION_PATH) -> dict:
     if not path.exists():
         raise FileNotFoundError(f"营养信息文件不存在: {path}")
+    with path.open("r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def load_display_names(path: Path = DEFAULT_DISPLAY_NAMES_PATH) -> dict:
+    if not path.exists():
+        return {}
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
 
@@ -48,8 +56,10 @@ def build_suggestion(nutrition: dict) -> str:
 
 def get_nutrition_result(food_name: str) -> dict:
     nutrition = get_nutrition(food_name)
+    display_names = load_display_names()
     return {
-        "display_name": nutrition.get("display_name", food_name),
+        "display_name": nutrition.get("display_name") or display_names.get(food_name, food_name),
+        "category": nutrition.get("category", "未分类"),
         "calories": nutrition.get("calories"),
         "protein": nutrition.get("protein"),
         "fat": nutrition.get("fat"),
