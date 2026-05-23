@@ -14,8 +14,12 @@ from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
-from nutrition import get_nutrition_result
-from predict import predict_image
+try:
+    from .nutrition import get_nutrition_result
+    from .predict import get_model_info, predict_image
+except ImportError:
+    from nutrition import get_nutrition_result
+    from predict import get_model_info, predict_image
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -43,6 +47,14 @@ def frontend_files(filename: str):
     return send_from_directory(FRONTEND_DIR, filename)
 
 
+@app.get("/model-info")
+def model_info():
+    try:
+        return jsonify(get_model_info())
+    except Exception as exc:
+        return jsonify({"error": f"模型信息读取失败: {exc}"}), 500
+
+
 @app.post("/predict")
 def predict():
     if "image" not in request.files:
@@ -61,8 +73,10 @@ def predict():
     file.save(upload_path)
 
     try:
-        prediction = predict_image(upload_path)
+        prediction = predict_image(upload_path, topk=5)
         nutrition = get_nutrition_result(prediction["food_name"])
+        for item in prediction["top_predictions"]:
+            item["display_name"] = get_nutrition_result(item["food_name"])["display_name"]
     except FileNotFoundError as exc:
         return jsonify({"error": str(exc)}), 500
     except KeyError as exc:
@@ -82,6 +96,7 @@ def predict():
                 "fat": nutrition["fat"],
                 "carbohydrate": nutrition["carbohydrate"],
                 "unit": nutrition["unit"],
+                "category": nutrition["category"],
             },
             "suggestion": nutrition["suggestion"],
         }

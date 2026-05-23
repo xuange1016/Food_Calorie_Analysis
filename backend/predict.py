@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 import torch
@@ -16,8 +17,13 @@ from torchvision import models, transforms
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_MODEL_PATH = PROJECT_ROOT / "backend" / "models" / "food_model.pth"
+LEGACY_MODEL_PATH = PROJECT_ROOT / "backend" / "models" / "food_model.pth"
+FOOD101_MODEL_PATH = PROJECT_ROOT / "training_runs" / "food101_101class" / "food_model_101class.pth"
+DEFAULT_MODEL_PATH = Path(os.environ.get("FOOD_CALORIE_MODEL_PATH", FOOD101_MODEL_PATH))
+if not DEFAULT_MODEL_PATH.exists():
+    DEFAULT_MODEL_PATH = LEGACY_MODEL_PATH
 DEFAULT_CLASS_NAMES_PATH = PROJECT_ROOT / "backend" / "models" / "class_names.json"
+_MODEL_CACHE: dict[Path, tuple[nn.Module, list[str], int, torch.device]] = {}
 
 
 def load_class_names(path: Path = DEFAULT_CLASS_NAMES_PATH) -> list[str]:
@@ -34,6 +40,10 @@ def build_model(num_classes: int) -> nn.Module:
 
 
 def load_model(model_path: Path = DEFAULT_MODEL_PATH) -> tuple[nn.Module, list[str], int, torch.device]:
+    model_path = model_path.resolve()
+    if model_path in _MODEL_CACHE:
+        return _MODEL_CACHE[model_path]
+
     if not model_path.exists():
         raise FileNotFoundError(f"模型文件不存在: {model_path}")
 
@@ -46,7 +56,19 @@ def load_model(model_path: Path = DEFAULT_MODEL_PATH) -> tuple[nn.Module, list[s
     model.load_state_dict(checkpoint["model_state_dict"])
     model.to(device)
     model.eval()
-    return model, class_names, image_size, device
+    model_bundle = (model, class_names, image_size, device)
+    _MODEL_CACHE[model_path] = model_bundle
+    return model_bundle
+
+
+def get_model_info(model_path: str | Path = DEFAULT_MODEL_PATH) -> dict:
+    model, class_names, image_size, device = load_model(Path(model_path))
+    return {
+        "model_path": str(Path(model_path).resolve()),
+        "num_classes": len(class_names),
+        "image_size": image_size,
+        "device": str(device),
+    }
 
 
 def build_transform(image_size: int) -> transforms.Compose:
@@ -62,8 +84,8 @@ def build_transform(image_size: int) -> transforms.Compose:
     )
 
 
-def predict_image(image_path: str | Path, topk: int = 3) -> dict:
-    model, class_names, image_size, device = load_model()
+def predict_image(image_path: str | Path, topk: int = 3, model_path: str | Path = DEFAULT_MODEL_PATH) -> dict:
+    model, class_names, image_size, device = load_model(Path(model_path))
     transform = build_transform(image_size)
 
     image = Image.open(image_path).convert("RGB")

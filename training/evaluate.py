@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -31,6 +32,7 @@ def main() -> None:
     parser.add_argument("--model-path", type=Path, default=DEFAULT_MODEL_PATH)
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--num-workers", type=int, default=0)
+    parser.add_argument("--metrics-path", type=Path, default=None)
     args = parser.parse_args()
 
     if not args.model_path.exists():
@@ -87,6 +89,16 @@ def main() -> None:
                     per_class_correct[class_name] += 1
 
     accuracy = correct / total
+    metrics = {
+        "model_path": str(args.model_path),
+        "data_dir": str(args.data_dir),
+        "image_size": image_size,
+        "num_classes": len(class_names),
+        "test_samples": total,
+        "test_accuracy": round(accuracy, 6),
+        "per_class": {},
+    }
+
     print(f"测试样本数: {total}")
     print(f"测试准确率: {accuracy:.4f}")
     print("各类别准确率:")
@@ -94,7 +106,18 @@ def main() -> None:
         class_total = per_class_total[class_name]
         class_correct = per_class_correct[class_name]
         class_acc = class_correct / class_total if class_total else 0
+        metrics["per_class"][class_name] = {
+            "accuracy": round(class_acc, 6),
+            "correct": class_correct,
+            "total": class_total,
+        }
         print(f"  {class_name}: {class_acc:.4f} ({class_correct}/{class_total})")
+
+    if args.metrics_path is not None:
+        args.metrics_path.parent.mkdir(parents=True, exist_ok=True)
+        with args.metrics_path.open("w", encoding="utf-8") as f:
+            json.dump(metrics, f, ensure_ascii=False, indent=2)
+        print(f"评估指标已保存: {args.metrics_path}")
 
 
 if __name__ == "__main__":

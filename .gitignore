@@ -18,6 +18,7 @@ data/
 # Runtime uploads and logs
 backend/uploads/
 *.log
+training_runs/
 
 # Local render/build artifacts
 report/rendered_report/
