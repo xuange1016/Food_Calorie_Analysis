@@ -4,34 +4,195 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>菜品识别与热量估算助手</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23197653'/%3E%3Cpath d='M9 18h14v4H9zM10 10h12a3 3 0 0 1 0 6H10a3 3 0 0 1 0-6z' fill='white'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <main class="app-shell">
       <header class="app-header">
-        <p class="eyebrow">Food-101 101类测试版</p>
-        <h1>食堂/外卖菜品识别与热量估算助手</h1>
-        <p id="modelInfoText">上传或拍摄一张食物图片，系统会用 101 类模型识别并给出平均营养估算。</p>
+        <div class="header-copy">
+          <div class="brand-title">
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M7 3v7M10 3v7M7 10h3M8.5 10v11M15 4c2.2 1.3 3.5 3.5 3.5 6.1 0 3.2-1.9 5.8-4.5 6.8V21" />
+              </svg>
+            </span>
+            <div>
+              <p class="eyebrow">Food-101 101类测试版</p>
+              <h1>食堂/外卖菜品识别与热量估算助手</h1>
+            </div>
+          </div>
+          <p id="modelInfoText">上传或拍摄一张食物图片，系统会用 101 类模型识别并给出平均营养估算。</p>
+        </div>
+        <div class="header-status" aria-label="工作流状态">
+          <span>图片识别</span>
+          <span>本地热量表</span>
+          <span>AI 要点建议</span>
+        </div>
       </header>
 
       <section class="workspace">
-        <section class="upload-panel" aria-label="图片上传区域">
-          <div class="preview-box">
-            <img id="previewImage" alt="图片预览" hidden />
-            <div id="emptyPreview" class="empty-preview">请选择一张食物图片</div>
-          </div>
+        <aside class="control-panel" aria-label="模型和个人信息配置">
+          <section class="panel-section model-config" aria-label="云端模型配置">
+            <div class="section-heading">
+              <span class="module-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M7 18h11a4 4 0 0 0 0-8 6 6 0 0 0-11.3-1.7A4.5 4.5 0 0 0 7 18Z" /></svg>
+              </span>
+              <div>
+                <h2>云端模型</h2>
+                <p>OpenAI-compatible</p>
+              </div>
+            </div>
+            <label>
+              <span>Base URL</span>
+              <input id="baseUrlInput" type="url" placeholder="https://api.openai.com/v1" autocomplete="off" />
+            </label>
+            <div class="config-row">
+              <label>
+                <span>模型</span>
+                <input id="cloudModelInput" type="text" placeholder="gpt-4.1-mini" autocomplete="off" />
+              </label>
+              <label>
+                <span>温度</span>
+                <input id="temperatureInput" type="number" min="0" max="1" step="0.1" value="0.3" />
+              </label>
+            </div>
+            <label>
+              <span>API Key</span>
+              <input id="apiKeyInput" type="password" placeholder="sk-..." autocomplete="off" />
+            </label>
+            <button id="saveConfigButton" class="secondary-button" type="button">保存配置</button>
+          </section>
 
-          <div class="actions">
-            <label class="file-button" for="imageInput">拍照/选择图片</label>
-            <input id="imageInput" type="file" accept="image/*" capture="environment" />
-            <button id="predictButton" type="button">开始识别</button>
-          </div>
-          <p id="statusText" class="status-text">支持 jpg、jpeg、png。手机浏览器可尝试调用相机。</p>
+          <section class="panel-section profile-block">
+            <div class="section-heading">
+              <span class="module-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM5 21a7 7 0 0 1 14 0" /></svg>
+              </span>
+              <div>
+                <h2>个人信息</h2>
+                <p>用于生成个性化建议</p>
+              </div>
+            </div>
+            <div class="profile-grid">
+              <label>
+                <span>目标</span>
+                <select id="goalInput">
+                  <option value="增肌">增肌</option>
+                  <option value="减脂">减脂</option>
+                  <option value="维持体重">维持体重</option>
+                  <option value="控糖/清淡饮食">控糖/清淡饮食</option>
+                </select>
+              </label>
+              <label>
+                <span>性别</span>
+                <select id="genderInput">
+                  <option value="男">男</option>
+                  <option value="女">女</option>
+                  <option value="未说明">未说明</option>
+                </select>
+              </label>
+              <label>
+                <span>年龄</span>
+                <input id="ageInput" type="number" min="1" max="120" placeholder="20" />
+              </label>
+              <label>
+                <span>身高 cm</span>
+                <input id="heightInput" type="number" min="80" max="230" placeholder="175" />
+              </label>
+              <label>
+                <span>体重 kg</span>
+                <input id="weightInput" type="number" min="20" max="250" placeholder="70" />
+              </label>
+              <label>
+                <span>体脂 %</span>
+                <input id="bodyFatInput" type="number" min="3" max="70" step="0.1" placeholder="18" />
+              </label>
+              <label class="wide-field">
+                <span>活动水平</span>
+                <select id="activityInput">
+                  <option value="久坐/很少运动">久坐/很少运动</option>
+                  <option value="每周运动1-3次">每周运动1-3次</option>
+                  <option value="每周运动4-5次">每周运动4-5次</option>
+                  <option value="高强度训练或体力劳动">高强度训练或体力劳动</option>
+                </select>
+              </label>
+              <label class="wide-field">
+                <span>补充说明</span>
+                <textarea id="notesInput" rows="3" placeholder="例如：今天练胸，晚餐想吃得干净一点"></textarea>
+              </label>
+            </div>
+            <p id="bmiText" class="status-text">填写身高和体重后自动计算 BMI。</p>
+          </section>
+        </aside>
+
+        <section class="left-column" aria-label="图片和本地分析区域">
+          <section class="upload-panel" aria-label="图片上传区域">
+            <div class="section-heading">
+              <span class="module-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M5 5h14v14H5zM8 15l3-3 2 2 2-3 3 4M8 9h.1" /></svg>
+              </span>
+              <div>
+                <h2>图片识别</h2>
+                <p>上传食物照片，识别菜品和候选项</p>
+              </div>
+            </div>
+            <div class="preview-box">
+              <img id="previewImage" alt="图片预览" hidden />
+              <div id="emptyPreview" class="empty-preview">
+                <strong>请选择一张食物图片</strong>
+                <span>建议使用清晰、正面、光线充足的单餐照片</span>
+              </div>
+            </div>
+
+            <div class="actions">
+              <label class="file-button" for="imageInput">拍照/选择图片</label>
+              <input id="imageInput" type="file" accept="image/*" capture="environment" />
+              <button id="predictButton" type="button">开始识别</button>
+            </div>
+            <p id="statusText" class="status-text">支持 jpg、jpeg、png。手机浏览器可尝试调用相机。</p>
+          </section>
+
+          <section class="analysis-grid" aria-label="食物介绍和热量分析">
+            <article class="info-block">
+              <div class="section-heading compact-heading">
+                <span class="module-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M7 4h10v18H7zM10 8h4M10 12h4M10 16h2M17 7h2v5h-2" /></svg>
+                </span>
+                <div>
+                  <h2>食物介绍</h2>
+                  <p>识别结果与营养特点</p>
+                </div>
+              </div>
+              <p id="foodIntro">识别后展示食物特点、营养结构和摄入注意点。</p>
+            </article>
+
+            <article class="info-block">
+              <div class="section-heading compact-heading">
+                <span class="module-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 21a8 8 0 1 0-8-8M12 13V5M12 13l5 3" /></svg>
+                </span>
+                <div>
+                  <h2>热量分析</h2>
+                  <p>本地 JSON 表格估算值</p>
+                </div>
+              </div>
+              <p id="calorieAnalysis">热量、蛋白质、脂肪和碳水分析来自本地 JSON 营养表。</p>
+            </article>
+          </section>
         </section>
 
         <section class="result-panel" aria-label="识别结果区域">
           <article class="info-block">
-            <h2>识别结果</h2>
+            <div class="section-heading compact-heading">
+              <span class="module-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6M4 20h16" /></svg>
+              </span>
+              <div>
+                <h2>识别结果</h2>
+                <p>模型主判断</p>
+              </div>
+            </div>
             <dl>
               <div>
                 <dt>食物类别</dt>
@@ -45,23 +206,75 @@
           </article>
 
           <article class="info-block">
-            <h2>营养信息</h2>
+            <div class="section-heading compact-heading">
+              <span class="module-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M7 20V9M12 20V4M17 20v-7M4 20h16" /></svg>
+              </span>
+              <div>
+                <h2>营养信息</h2>
+                <p>每 100 克估算</p>
+              </div>
+            </div>
             <p id="unitText" class="unit-text">每100克估算值</p>
             <div class="nutrition-grid">
-              <div><span id="calories">--</span><small>kcal 热量</small></div>
-              <div><span id="protein">--</span><small>g 蛋白质</small></div>
-              <div><span id="fat">--</span><small>g 脂肪</small></div>
-              <div><span id="carbohydrate">--</span><small>g 碳水</small></div>
+              <div class="macro-card macro-calories">
+                <span class="macro-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 22c4-2 6-5 6-9 0-3-2-6-5-9 0 3-2 5-4 6-2 1-3 3-3 5 0 4 3 6 6 7Z" /></svg>
+                </span>
+                <span id="calories">--</span>
+                <small>kcal 热量</small>
+              </div>
+              <div class="macro-card macro-protein">
+                <span class="macro-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M7 14c0-3 2-6 5-8 3 2 5 5 5 8M5 18h14M8 18v-3M12 18v-5M16 18v-4" /></svg>
+                </span>
+                <span id="protein">--</span>
+                <small>g 蛋白质</small>
+              </div>
+              <div class="macro-card macro-fat">
+                <span class="macro-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 3c4 5 6 8 6 12a6 6 0 0 1-12 0c0-4 2-7 6-12Z" /></svg>
+                </span>
+                <span id="fat">--</span>
+                <small>g 脂肪</small>
+              </div>
+              <div class="macro-card macro-carbs">
+                <span class="macro-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 21V4M6 9c3 0 6 2 6 5-3 0-6-2-6-5ZM18 8c-3 0-6 2-6 5 3 0 6-2 6-5ZM7 16c3 0 5 1 5 4-3 0-5-1-5-4Z" /></svg>
+                </span>
+                <span id="carbohydrate">--</span>
+                <small>g 碳水</small>
+              </div>
             </div>
           </article>
 
           <article class="info-block">
-            <h2>饮食建议</h2>
-            <p id="suggestion">上传图片后生成建议。</p>
+            <div class="block-title-row">
+              <div class="section-heading compact-heading">
+                <span class="module-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M5 12a7 7 0 0 1 12-5M19 5v5h-5M19 12a7 7 0 0 1-12 5M5 19v-5h5" /></svg>
+                </span>
+                <div>
+                  <h2>AI 饮食建议</h2>
+                  <p>结合个人资料和目标</p>
+                </div>
+              </div>
+              <button id="adviceButton" class="secondary-button" type="button">生成建议</button>
+            </div>
+            <p id="suggestion">上传图片并填写个人信息后，可调用云端模型生成个性化建议。</p>
+            <div id="structuredAdvice" class="structured-advice" hidden></div>
           </article>
 
           <article class="info-block">
-            <h2>Top-5 预测</h2>
+            <div class="section-heading compact-heading">
+              <span class="module-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M8 7h13M8 12h13M8 17h13M3 7h.1M3 12h.1M3 17h.1" /></svg>
+              </span>
+              <div>
+                <h2>Top-5 预测</h2>
+                <p>候选结果</p>
+              </div>
+            </div>
             <ol id="topPredictions" class="top-list">
               <li>暂无结果</li>
             </ol>

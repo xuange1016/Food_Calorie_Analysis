@@ -54,6 +54,58 @@ def build_suggestion(nutrition: dict) -> str:
     return "营养相对均衡，可以作为正常一餐的一部分。"
 
 
+def build_food_intro(nutrition: dict) -> str:
+    """Generate a short local introduction from the nutrition table."""
+    name = nutrition.get("display_name", "该食物")
+    category = nutrition.get("category", "未分类")
+    calories = nutrition.get("calories")
+    protein = nutrition.get("protein")
+    fat = nutrition.get("fat")
+    carbohydrate = nutrition.get("carbohydrate")
+
+    macro_notes = []
+    if protein is not None and float(protein) >= 18:
+        macro_notes.append("蛋白质占比较高")
+    if fat is not None and float(fat) >= 15:
+        macro_notes.append("脂肪含量偏高")
+    if carbohydrate is not None and float(carbohydrate) >= 30:
+        macro_notes.append("碳水含量较高")
+    if calories is not None and float(calories) >= 280:
+        macro_notes.append("单位热量较高")
+
+    feature_text = "，".join(macro_notes) if macro_notes else "营养分布相对温和"
+    return (
+        f"{name}属于{category}类食物。按本项目营养表估算，每100克约含 {calories} kcal 热量、"
+        f"{protein} g 蛋白质、{fat} g 脂肪和 {carbohydrate} g 碳水，整体特点是{feature_text}。"
+        "实际摄入还会受到份量、烹饪方式、酱料和配菜影响，建议结合个人目标判断是否适合当前这一餐。"
+    )
+
+
+def build_calorie_analysis(nutrition: dict) -> str:
+    calories = float(nutrition.get("calories", 0))
+    protein = float(nutrition.get("protein", 0))
+    fat = float(nutrition.get("fat", 0))
+    carbohydrate = float(nutrition.get("carbohydrate", 0))
+
+    if calories >= 300:
+        energy_level = "热量密度较高"
+    elif calories >= 180:
+        energy_level = "热量密度中等"
+    else:
+        energy_level = "热量密度较低"
+
+    protein_ratio = protein * 4 / calories if calories else 0
+    fat_ratio = fat * 9 / calories if calories else 0
+    carb_ratio = carbohydrate * 4 / calories if calories else 0
+
+    return (
+        f"该食物每100克约 {calories:g} kcal，属于{energy_level}。按三大营养素粗略折算，"
+        f"蛋白质供能约占 {protein_ratio * 100:.0f}%，脂肪约占 {fat_ratio * 100:.0f}%，"
+        f"碳水约占 {carb_ratio * 100:.0f}%。如果目标是减脂，重点关注份量和额外油脂；"
+        "如果目标是增肌，可以结合全天蛋白质目标和训练前后进餐时机来安排。"
+    )
+
+
 def get_nutrition_result(food_name: str) -> dict:
     nutrition = get_nutrition(food_name)
     display_names = load_display_names()
@@ -66,4 +118,6 @@ def get_nutrition_result(food_name: str) -> dict:
         "carbohydrate": nutrition.get("carbohydrate"),
         "unit": nutrition.get("unit", "每100克估算值"),
         "suggestion": build_suggestion(nutrition),
+        "food_intro": nutrition.get("food_intro") or build_food_intro(nutrition),
+        "calorie_analysis": nutrition.get("calorie_analysis") or build_calorie_analysis(nutrition),
     }
